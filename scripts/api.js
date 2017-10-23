@@ -1,6 +1,7 @@
 (function () {
     // Mock repository
     let adverts = [
+
         {
             _id: 0,
             _acl: {
@@ -129,6 +130,7 @@
     });
 
 
+
     // Create advert
     $.mockjax(function (requestSettings) {
         if (requestSettings.url === "https://mock.api.com/appdata/kid_rk/adverts" &&
@@ -173,6 +175,15 @@
                 response: function (origSettings) {
                     if (requestSettings.headers["Authorization"].includes("Kinvey mock_token")) {
                         adverts = adverts.filter(a => a._id !== advertId);
+
+    // Loading of adverts
+    $.mockjax(function (requestSettings) {
+        if (requestSettings.url === "https://mock.api.com/appdata/kid_rk/adverts" &&
+            requestSettings.method === "GET") {
+            return {
+                response: function (origSettings) {
+                    if (requestSettings.headers["Authorization"].includes("Kinvey mock_token")) {
+
                         this.responseText = adverts;
                     } else {
                         this.status = 403;
@@ -182,7 +193,6 @@
             };
         }
     });
-
 
     // Edit advert
     $.mockjax(function (requestSettings) {
