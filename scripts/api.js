@@ -1,18 +1,17 @@
 (function () {
     // Mock repository
     let adverts = [
-
         {
             _id: 0,
             _acl: {
                 creator: 0
             },
             title: "XBoss 1080",
-			description: "Modded gaming console",
+            description: "Modded gaming console",
             publisher: "Pesho",
             datePublished: "2017-06-04",
             price: 100,
-			image: "./static/fuze-f1.png"
+            image: "./static/fuze-f1.png"
         }
     ];
 
@@ -42,6 +41,7 @@
             password: "m"
         }
     ];
+
 
     // User login
     $.mockjax(function (requestSettings) {
@@ -131,8 +131,6 @@
         }
     });
 
-
-
     // Create advert
     $.mockjax(function (requestSettings) {
         if (requestSettings.url === "https://mock.api.com/appdata/kid_rk/adverts" &&
@@ -153,7 +151,7 @@
                                 creator: creator
                             },
                             title: data.title,
-							description: data.description,
+                            description: data.description,
                             publisher: data.publisher,
                             datePublished: data.datePublished,
                             price: data.price
@@ -178,15 +176,6 @@
                 response: function (origSettings) {
                     if (requestSettings.headers["Authorization"].includes("Kinvey mock_token")) {
                         adverts = adverts.filter(a => a._id !== advertId);
-
-    // Loading of adverts
-    $.mockjax(function (requestSettings) {
-        if (requestSettings.url === "https://mock.api.com/appdata/kid_rk/adverts" &&
-            requestSettings.method === "GET") {
-            return {
-                response: function (origSettings) {
-                    if (requestSettings.headers["Authorization"].includes("Kinvey mock_token")) {
-
                         this.responseText = adverts;
                     } else {
                         this.status = 403;
@@ -196,12 +185,25 @@
             };
         }
     });
-<<<<<<< HEAD
-	
-	// Load single advert
+
+    // Load single advert
     $.mockjax(function (requestSettings) {
         if (requestSettings.url.match(/https:\/\/mock\.api\.com\/appdata\/kid_rk\/adverts\/(.+)/) &&
             requestSettings.method === "GET") {
+            let advertId = Number(requestSettings.url.match(/https:\/\/mock\.api\.com\/appdata\/kid_rk\/adverts\/(.+)/)[1]);
+            return {
+                response: function (origSettings) {
+                    if (requestSettings.headers["Authorization"].includes("Kinvey mock_token")) {
+                        let advert = adverts.filter(a => a._id === advertId);
+                        this.responseText = advert.shift();
+                    } else {
+                        this.status = 403;
+                        this.responseText = "You are not authorized";
+                    }
+                }
+            };
+        }
+    });
 
     // Edit advert
     $.mockjax(function (requestSettings) {
@@ -211,18 +213,17 @@
             return {
                 response: function (origSettings) {
                     if (requestSettings.headers["Authorization"].includes("Kinvey mock_token")) {
-                        let advert = adverts.filter(a => a._id === advertId);                       
+                        let advert = adverts.filter(a => a._id === advertId);
                         let data = requestSettings.data;
                         if (advert.length > 0) {
                             advert = advert[0];
                             advert.title = data.title;
-							advert.description = data.description;
+                            advert.description = data.description;
                             advert.publisher = data.publisher;
                             advert.datePublished = data.datePublished;
                             advert.price = data.price;
 							advert.image = data.image;
                             this.responseText = advert;
-							this.responseText = advert.shift();
                         }
                         this.responseText = {};
                     } else {
